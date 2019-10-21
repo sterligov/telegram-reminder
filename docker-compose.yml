@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  postgre:
+    image: postgres:12
+    container_name: postgre
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_SCHEMA}
+    ports:
+      - ${DB_PORT}:5432
+    volumes:
+      - .docker/postgre:/var/lib/postgresql/data
+      - ./telegram_reminder.sql:/docker-entrypoint-initdb.d/init.sql   
+  go_reminder:
+    build: .
+    container_name: go_reminder
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    depends_on:
+      - postgre
